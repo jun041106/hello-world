@@ -1,0 +1,1058 @@
+《轻松学Linux云计算系列课程之Linux基础》
+尚观教育官方账号共73课时8420人学习
+#date +%F
+2017-04-07
+#date +%T
+13:54:18
+
+#date +%H
+13
+#date +%M
+54
+#date +%m
+18
+
+命令引用
+#date +%F-%T
+2017-04-07-13:56:14
+
+命令引用的两种方式
+#touch /tmp/$(data +%F-%T).log
+#touch /tmp/`data +%F-%T`.log
+
+hh-mm-ss
+man date
+
+统计文件行数
+#wc -l /etc/passwd
+
+8)查看文件内容（文本）
+cat/more/less/head/tail
+cat：查看小文本文件
+#cat -n /etc/fstab //加上行号显示
+#cat /etc/redhat-release //显示版本信息
+
+more：分页显示文件，只能向下看
+    # q退出
+less：分页显示文件内容，可以上下看
+    # q退出
+head：
+#head -n 3 /etc/passwd //查看前3行，默认前10行
+tail：
+#tail -n 3 /etc/passwd //查看后3行，默认后10行
+
+查看文件类型：
+#file /etc/passwd
+/etc/passwd:ASCII text //文件类型txt
+
+ls命令在/usr/bin/ls 目录中
+# which ls //查看ls命令的目录位置
+
+管道符 | ：管道前的输出作为管道后命令的输入
+#head -n 5 /etc/passwd | tail -n 1 //获取第5行
+
+10) 查找文件目录
+find 路径 查找方式
+# find /etc/ -name "*.conf" //查找.conf为后缀的文件
+# find /etc/ -name "*.conf" | wc -l //统计行数
+# find /etc/ -size +1M    //查找大于1M的文件，-1M是小于1M
+
+按照文件修改时间查找
+# find /  -mtime +7   //查找7天前修改的文件,-7是小于7天
+
+按照文件类型查找
+# find /dev -type b //d 目录、b块文件、c字符设备文件、l连接
+
+# find /  -mtime -7 -a -size -100k //7天内并且小于100k的文件
+
+# find /bj/ -name "*.txt" -exec rm -rf {} \; //删除查找到的文件，最后的\是命令-exec结束
+
+#find /bj/ -name "*.txt" -exec cp {} /tmp \; //其中{}是找到文件的集合
+
+=============================================================================
+vim 编辑器
+# vim 文件名
+模式化编辑器：
+    命令模式
+    插入模式
+    末行模式
+1）模式间的切换
+命令模式-->插入模式
+o 当前行下新增加一行，且进入插入模式
+O 当前行上新增一行，且进入插入模式
+i 进入插入模式
+a 当前位置下一个位置，且进入插入模式
+插入模式-->命令模式
+#ESC
+
+命令模式 --> 末行模式
+#: //冒号
+#:set nu //加上行号视图
+
+2）命令模式下的操作
+1、快速移动光标
+    h左 j下 k上 l右
+    shift+g  最后一行
+    gg       返回首行
+    12gg     跳转到指定行
+    $        跳转到行尾 即shift+4
+    ^        跳转到行首 即shift+6
+    
+2、删除字符
+    x      删除单个字符
+    dw     删除单词
+    d$    删除到行尾
+    d^    删除到行首
+    
+    dd    删除整行
+    dG    删除到文件末尾
+    
+3、替换操作
+    r    替换单个字符
+    R    连续替换多个字符，按ESC返回命令模式
+    
+4、撤销操作
+    u    撤销一个操作
+    
+5、复制与粘贴
+    yy    复制一整行，10yy复制当前10行
+    p     粘贴到当前行的下一行，10p粘贴10行
+    P     粘贴到当前行的上一行
+    剪切：dd后移动到目标行p即是剪切
+    
+7、搜索文件内容
+    /string :string是搜索的目标字符，n 操作下一个、N操作上一个
+        n    向下查找
+        N    向上查找
+
+末行模式操作
+
+    :q!    强制退出
+    :wq    保存退出
+    :r     追加合并两个文件
+    :set nu 显示行号
+    :set nonu 不显示行号
+    :[查找范围]   :s/老内容/新内容[/修饰符]
+        :s/root/admin   替换当前第一个
+        :s/root/admin/g 替换当前整行范围
+        :% s/root/admin/g 替换全文所有root
+        :5,10 s/root/admin/g 替换第5到10行
+        :.,$ s/root/admin/g  替换当前行到最后一行，. 当前行，$ 最后一行
+
+---------------------------------------------------------------------
+8 正则表达式的元字符
+1）匹配单个字符的元字符
+.    任意单个字符
+
+# grep "r..t" /tmp/passwd
+
+
+[abc] 或者 [a-z] [A-Z] [0-9] [a-zA-Z0-9]
+
+#grep "r[aA]t" /tmp/1.txt
+
+^    取反
+[^a-z]
+#grep "r[^0-9]t" /tmp/1.txt
+
+特殊字符集：
+    [[:punct:]]    任意单个标点
+    [[:space:]]    任意单个空白字符
+    
+#grep "r[[:punct:]]t" /tmp/1.txt
+#grep "r[[:space:]]t" /tmp/1.txt
+
+2)匹配字符出现的位置
+
+^string    以string开头
+string$    以string结尾
+
+#grep "^root" /etc/passwd
+#grep "^[rhb]" /etc/passwd
+#grep "^[^rhb]" /etc/passwd
+
+#grep "bash$" /etc/passwd
+#grep "bash$" /etc/passwd | wc -l
+
+^$    空行
+#grep "^$" /etc/passwd | wc -l
+#ls -l /etc/ |grep “^d" 
+
+3)匹配字符出现的次数
+*    匹配其前一个字符出现任意次
+    .*    任意字符
+#grep "ab*" /tmp/2.txt
+
+\?    0次或者1次    可有可无
+#grep "ab\?" /tmp/2.txt  //说明：\是转义字符
+
+\{2\}    精确匹配2次
+#grep "ab\{2\}" /tmp/2.txt
+
+\{2,5\}    最少2次，最多5次
+#grep "ab\{2,5\}" /tmp/2.txt
+
+\{2,\}     最少2次
+#grep "ab\{2,\}" /tmp/2.txt       
+        
+分组 \(ab\)\{2,\}   ab同时出现2次以上
+
+option选项：
+1） -i    忽略大小写
+#grep -i "^r" /tmp/1.txt
+
+2） -o    仅显示符合正则表达式的内容，不再显示整行
+#grep -o "r..t" /etc/passwd
+
+3） -v    反向过滤
+#grep -v "^#" /etc/fstab
+
+4） -e    根据多个条件过滤文本
+#grep -e "^$" -e "^#" /etc/fstab
+#grep -v -e "^$" -e "^#" /etc/fstab
+
+5） -E    支持扩展正则表达式，\{可以不用
+#grep -E "(ab){2,}" /usr/share/dict/words
+#grep -E "vmx|svm" /proc/cpuinfo
+
+6） -A n    同时显示符合条件的后n行
+#ifconfig eth0 | grep -A 2 "netmask"
+
+7） -B n    同时显示符合条件前n行
+#ifconfig eth0 | grep -B 2 "netmask"
+
+
+--------------------------------------------------------
+10 文件目录压缩、解压缩
+
+文件压缩/解压缩 ------ gzip/bzip2/xz
+1) gzip    后缀.gz
+#gzip /file/1.txt
+#file /file/1.txt.gz
+解压缩：
+#gzip -d /file/1.txt.gz
+
+2) bzip2
+#bzip2 /file/2.txt
+#file /file/2.txt.bz2
+解压缩：
+#bzip2 -d /file/2.txt.bz2
+
+3) xz
+#xz /file/3.txt
+压缩后源文件删除了
+解压缩：
+#xz -d /file/3.txt.xz
+
+以上3个命令压缩单个文件，且删除了原文件
+
+
+创建打包文件 --- tar
+仅打包，不压缩
+1）创建打包文件  *.tar
+#tar cf 打包文件名称 源文件
+    c：create创建
+    f:file文件
+
+#tar cf /bak/file01.tar /file/
+
+2）解包
+#tar xf 打包文件名称 [-C 目录名称]
+
+#tar xf /bak/file01.tar  //到当前目录
+#tar xf /bak/file01.tar -C /tmp/
+
+3)查看包中的文件
+#tar tvf /bak/file01.tar
+
+
+调用gzip实现压缩/解压缩
+#tar czf 打包文件名称 源文件
+     z: 调用gzip
+ 
+#tar czf /bak/etc02.tar.gz /etc/
+
+解压缩：
+#tar xzf 打包文件名称 [-C 目录名称]
+#tar zxf /bak/etc02.tar.gz -C /tmp/
+
+
+调用bzip2实现压缩/解压缩
+#tar cjf 打包文件名称 源文件
+     j: 调用bzip2
+ 
+#tar cjf /bak/etc03.tar.bz2 /etc/
+
+解压缩：
+#tar xjf 打包文件名称 [-C 目录名称]
+#tar zjf /bak/etc03.tar.bz2 -C /tmp/
+
+
+调用xz实现压缩/解压缩
+#tar cJf 打包文件名称 源文件
+     J: 调用xz
+ 
+#tar cJf /bak/etc04.tar.xz /etc/
+
+解压缩：
+#tar xJf 打包文件名称 [-C 目录名称]
+#tar zJf /bak/etc04.tar.xz -C /tmp/
+
+//打包中会把路径也包含在内
+
+
+------------------------------------------------------------
+Linux用户及权限管理
+
+passwd文件：
+root:x:0:0:root:/root:/bin/bash
+用户名:密码占位符:用户ID:基本组ID:描述信息:家目录:工作shell
+    UID：
+        1000---60000   普通用户ID
+        0----999       系统用户ID
+    SHELL:
+        /bin/bash    默认
+        /sbin/nologin 系统用户，程序用，不能直接登录
+
+用户管理
+    多用户多任务的操作系统
+
+用户类型
+    管理员用户    root
+    普通用户 
+        系统用户/程序用户
+
+用户相关的文件：
+    /etc/passwd    用户信息
+    /etc/shadow    用户密码信息
+
+1、创建用户
+#useradd [option]用户名称
+    option选项：
+        -u UID   指定用户ID，UID
+            #useradd -u 2000 user2
+            #id user2
+            
+        -g gid   指定用户基本组  
+        -G gid/组名...   指定用户补充组
+            #groupadd caiwu
+            #useradd -g user1 -G caiwu user3 //创建user3，基本组user1、补充组caiwu。
+            
+        -s   指定shell名称
+        -M    不创建home目录
+        
+        -r    创建系统用户，无home目录
+            #useradd -r mssql
+        
+        -d    指定用户的宿主目录
+            #useradd -d /tmp/hadoop hadoop
+     #SELinux 开启，自带的安全机制
+     #getenforce 
+     Enforcing //开启状态
+     #setenforce 0 //临时关闭,重启后恢复
+     Permissive
+     #vim /etc/sysconfig/selinux  //永久修改,重启后生效
+     修改SELINUX=disabled
+   
+
+2、切换用户
+#su - 用户名称 //exit 返回root用户，退出当前用户
+
+3、查看用户id信息
+#id user1
+    选项：
+    #id -u user3  //用户id号
+    #id -g user3  //用户组号
+    
+4、设置用户密码
+#passwd [option] [用户名称]
+#passwd user1
+
+1)查看用户密码状态
+#passwd -S user1
+
+2)锁定用户密码（不能登录）
+#passwd -l user1
+#passwd -S user1
+
+3)解锁用户密码
+#passwd -u user1
+#passwd -S user1
+
+4)强制用户密码过期
+#passwd -e user1
+
+5)修改用户信息
+#usermod [option] 用户名称
+    -u UID
+    -g 组名称
+    -G 组名称
+    -s shell名称
+#usermod -aG caiwu user3 //把useer3追加到caiwu组 
+
+6)删除用户
+#userdel [option] 用户名称
+#userdel user1
+#userdel -r user2  //同时删除用户的宿主目录
+
+
+用户组管理
+1、创建用户组
+#groupadd 用户组名称
+
+2、删除用户组
+#groupdel 用户组名称
+
+3、添加用户到组
+#groupadd jishu
+#useradd tom
+#useradd mike
+#useradd jefy
+
+#usermod -G jishu tom   
+#usermod -G jishu mike
+#usermod -G jishu jefy
+
+#grep "jishu" /etc/group
+jishu:x:2005:tom,jefy,mike
+
+#gpasswd -d tom jishu //从jishu组中删除tom用户
+
+
+-------------------------------------------------------------
+13 文件权限管理
+14
+15
+-------------------------------------------------------------  
+Linux软件管理
+    
+    windows:
+        .exe
+        .msi
+    Centos/RHEL/Fedora:
+        二进制格式的软件（.rpm）
+        源码软件（*.tar.gz,*.tar.bz2）
+
+16 rpm软件管理 :redhat package management
+    .iso   光盘镜像文件
+        zlib-devel-1.2.7-15.e17.x86_64.rpm
+        软件名    |版本    |软件运行平台
+        #mount /dev/sr0 /mnt/   //挂载光盘
+        #ls /mnt/Packages/      //挂载后的位置
+        #umount /dev/sr0        //卸载光盘
+        
+            
+    互联网下载:
+        https://pkgs.org ,找对应系统版本
+        http://rpmfind.net (使用opera浏览器)
+        系统文件下载：www.zabbix.com
+    
+查看系统平台信息
+#uname -r //查看内核版本与cpu类型
+#cat /etc/redhat-release //查看系统发布版本    
+
+管理rpm软件
+
+1、查询软件：
+#rpm -q 软件名称 //名称全匹配
+#rpm -qa |grep vim //查询软件安装包，模糊查询
+      
+2、查询软件的说明信息
+#rpm -qi 软件名称
+#rpm -qi bash
+
+3、查看软件生成的文件
+#rpm -ql 软件名称
+
+4、查看文件有哪个程序软件生成
+#rpm -qf 文件名称
+#which chmod
+/usr/bin/chmod
+#rpm -qf /usr/bin/chmod
+coreutils
+#rpm -ql coreutils   //查看其中命令
+
+5、查看软件的配置文件
+#rpm -qc 软件名称  //查看软件配置文件
+
+管理操作：
+1) 安装软件
+ #rpm -ivh 软件安装包名称
+    i：安装install
+    v：显示详细信息verbose
+    h：显示软件的安装进度
+
+安装vsftpd软件    (在系统.iso中)
+#mount /dev/sr0 /mnt/
+#rpm -ivh /mnt/Packages/vsftpd-3.0.2-10.e17.x86_64.rpm
+#rpm -qi vsftpd
+
+安装dhcp软件，在系统.iso中
+
+安装ntfs-3g软件，支持U盘
+
+安装httpd软件，有依赖的软件，解决办法：
+    选项 --nodeps    忽略依赖关系，有风险
+    yum安装
+
+修改交互语音：
+#LANG=en
+
+2）卸载软件
+#rpm -e 软件名称 //不卸载依赖，安全卸载
+
+#rpm -e dhcp
+#rpm -q dhcp //查询确认卸载成功
+
+
+3）升级软件
+#rpm -Uvh 软件安装包名称
+    注意：自动卸载旧版本软件
+    --nodeps ,忽略依赖
+   
+18 yum的方式管理rpm软件
+    优势：自动解决软件的依赖关系
+前提条件：配置yum仓库/yum源
+
+yum源类型：
+    1、本地yum源
+    2、ftp源
+    3、http源 ：
+        阿里云镜像站 http://mirrors.aliyun.com
+        网易镜像站 http://mirrors.163.com
+        baseurl=//mirrors.aliyun.com/centos/7.3.1611/storage/x86_64/ceph-hammer/
+        
+        http://mirror.centos.org/   centos官网
+        #yum install -y epel-release  安装epel源
+        
+         
+yum源/仓库的配置文件
+    /etc/yum.repos.d/*repo
+        
+配置本地yum源
+    #mkdir /etc/yum.repos.d/default
+    #mv /etc/yum.repos.d/Centos* ./default
+    #vim /etc/yum.repos.d/centos.repo
+    文件内容：
+    [centos7.2]
+    name=centos7.2
+    baseurl=file:///mnt #本地/mnt目录
+    enabled=1   #启用
+    gpgcheck=0  #不检查签名
+    
+    #yum clean all //清除yum本地缓存
+    #yum repolist  //列出yum源
+    #yum makecache //本地缓存
+
+yum安装软件：
+1）
+#yum install -y vsftpd //-y默认确认   
+
+2）
+#yum list all |grep vsftpd //显示yum中的软件
+
+3）
+#yum grouplist   //显示所有软件组
+
+4）
+#yum groupinstall -y 软件组名称  //安装软件组
+#yum groupinstall -y "Security Tools"
+
+5）查询文件所属的软件名称
+#yum provides 文件名称
+#yum provides "*/bin/passwd"
+
+
+示例：配置ftp yum源
+#cd /etc/yum.repos.d/
+#mkdir /etc/yum.repos.d/default
+#mv /etc/yum.repos.d/Centos* ./default
+#vim /etc/yum.repos.d/ftp.repo
+    文件内容：
+    [ftpcentos7.2]
+    name=ftpcentos7.2
+    baseurl=ftp://172.16.8.100/centos7u2 #ftp目录
+    enabled=1   #启用
+    gpgcheck=0  #不检查签名
+
+#yum clean all //清除yum本地缓存
+#yum repolist  //列出yum源
+#yum makecache //本地缓存
+
+示例：安装mysql
+1）准备rpm软件
+2）创建yum元数据文件
+    #createrepo /mysql/
+
+
+源码软件管理安装
+    1、配置安装参数
+    2、编译
+    3、安装
+前提：gcc编译环境存在
+
+示例：编译安装htop软件（类似任务管理器）
+htop-1.0.3.tar.gz
+#tar zxf htop-1.0.3.tar.gz
+#cd htop-1.0.3
+#./configure --help |less //查看安装参数
+
+配置安装参数
+#./configure --prefix=/usr/local/htop
+有错，安装gcc
+#yum install -y gcc
+#./configure --prefix=/usr/local/htop
+有错，安装error中的程序或库
+#yum install -y ncurses-devel
+#./configure --prefix=/usr/local/htop
+
+编译，源文件当前目录下：
+#make
+
+安装
+#make install
+
+到安装目录：
+#cd /usr/local/htop/
+#ls
+bin share
+#cd bin
+#ls 
+htop
+#./htop //q 退出输出界面
+
+
+
+-------------------------------------------------------------
+22 Linux磁盘管理
+    基本磁盘管理
+    lvm/raid
+
+基本磁盘管理
+    /dev/sdx
+        sd:硬盘接口（scsi（320Mb/s），SATA(6Gb/s)，SAS(6Gb/s)）
+    /dev/sda
+        a:第一块硬盘
+
+磁盘分区名称：
+类型：
+    主分区    最多4个（主分区+扩展分区）
+    扩展分区（不能存数据，用于创建逻辑分区）
+    逻辑分区
+#ls -l /dev/sd*
+sda :硬盘1
+sda1：主分区1
+sda2：主分区2
+sda3：主分区3 //sda5及以后都是逻辑分区
+
+格式化/创建文件系统
+    Windows：
+        NTFS  当前使用的格式化
+        FAT32 老的格式化，单个文件大小不能大于4G。
+
+    Linux:
+        ext3, ext4(centos6), xfs(centos7)
+        swap
+
+挂载
+
+硬盘类型：
+    机械硬盘
+    固态硬盘（SSD）
+           
+        
+1、查看磁盘信息
+#fdisk -l
+#lsblk
+
+2、管理磁盘分区
+#fdisk 硬盘名称
+    -n 创建分区
+    -d 删除分区
+    -w 保存退出
+    -q 强制退出      
+    -t 修改分区ID
+    -p 打印分区表
+
+    
+#fdisk /dev/vdb  //vdb虚拟机上新加的硬盘
+创建分区 n
+主分区 p
+分区编号 1
+第一个扇区 默认上一个扇区位置
+最后一个扇区 +500M
+p
+
+
+3、创建文件系统格式化
+#mkfs -t 文件系统 磁盘分区名称
+#mkfs -t ext4 /dev/vdb1
+或
+#mkfs.ext4 /dev/vdb1
+
+4、挂载分区
+#mount 块设备文件名称 挂载点目录
+#mount 查看挂载信息        
+
+确保内核识别新挂载分区使用：
+partprobe /dev/vdb
+
+扩展分区不需要格式化。
+
+查看磁盘容量使用信息：
+df -hT  //h:可视化，T：文件系统
+
+mount命令是临时挂载，reboot后就没有了
+
+
+实现开机自动挂载块设备文件
+    /etc/fstab //系统表，开机加载
+格式：
+    块设备文件名称   挂载点目录 文件系统 挂载参数（defaults） 0（是否自动备份，1是备份） 0(不检测，1是提前检测，2是其次检测)   
+#vim /etc/fstab
+/dev/vdb1 /bj ext4 defaults 0 0
+/dev/vdb2 /bj ext4 defaults 0 0
+/dev/vdb5 /bj ext4 defaults 0 0
+/dev/vdb6 /bj ext4 defaults 0 0
+
+#mount -a  //使修改生效
+#df -hT    //查看容量是否存在
+
+查看设备ID
+#blkid /dev/vdb6
+
+限制磁盘存储数据的因素：
+    1、容量
+    2、inode i节点（磁盘存储文件对象管理信息，个数有限制）
+    #df -i /dev/vdb6 //查看磁盘inode的总数
+
+
+swap ：临时内存使用
+扩展swap分区容量
+1）查看swap分区大小
+#free -h  //查看内存信息，同时可以查看swap
+
+2）准备1G分区，修改其system ID为82，并格式化为swap文件系统
+#fdisk /dev/vdb    //(vdb中还有空间大于1G)    
+#partprobe /dev/vdb
+#grep "vdb7" /proc/partitions
+#mkswap /dev/vdb7  //格式化为swap格式系统
+
+3）启用新的swap
+#swapon /dev/vdb7     //临时启用
+#free -h    //查看
+#swapoff /dev/vdb7    //停用
+
+永久启用，修改配置文件fstab
+#vim /etc/fstab
+/dev/vdb7 swap defaults 0 0
+
+#mount -a
+#swapon -a
+
+-------------------------------------------------------------
+27 磁盘配额（disk quota）
+
+步骤：
+1、启用磁盘配额功能
+2、在挂自点目录下生成磁盘配额配置文件
+3、根据需求，编辑配置文件
+4、开启磁盘配额功能
+5、验证
+
+示例：
+在磁盘分区/dev/vdb5针对用户martin做限制，仅允许用户martin存储200M数据
+1)启用磁盘配额功能
+#vim /etc/fstab
+/dev/vdb5 /tj ext4 defaults,usrquota,grpquota 0 0
+#mount -o remount /dev/vdb5
+#mount |grep "vdb5"
+/dev/vdb5 on /tj type ext4(rw,relatime,seclabel,quota,usrquota,grpquota,data=ordered)
+
+2)在挂自点目录下生成磁盘配额配置文件
+#quotacheck -cug /tj/
+#ls /tj/
+aquota.group aquota.user 
+
+3)根据需求，编辑配置文件
+#useradd martin
+#edquota -u martin
+
+Disk quotas for user martin(uid 1001): //单位是KB，当前设置为200MB
+  Filesystm   blocks    soft    hard    inodes    soft    hard
+  /dev/vdb5     0        0      204800    0        0       0
+
+4、开启磁盘配额功能
+#quotaon -ugv /tj/
+
+
+5、验证
+设置权限
+#setfacl -m u:martin:rwx /tj/  
+#dd if=/dev/zero of=/tj/1.mp3 bs=1M count=300
+在结果中可以看到”Disk quota exceeded“
+
+
+命令解释：
+#dd if=/dev/zero of=/tj/1.mp3 bs=1M count=300
+
+    if=/dev/zero    指定源文件 
+    of=/tj/1.mp3    指定目标文件
+    bs=1M           数据块大小block size
+    count=300       次数
+
+U制作系统启动盘方法：
+ultraISO：u盘安装盘 ，windows中制作centos7.iso安装盘,sdb 当前为U盘
+linux系统中制作：
+#dd if=/iso/Centos-7-x86_64-DVD-1511.iso of=/dev/sdb bs=10M  
+#sync //同步数据
+   
+-------------------------------------------------------------
+28 Linux磁盘管理
+    lvm  ------ 逻辑卷管理
+    raid ------ 冗余磁盘阵列
+
+lvm: Logical Volume Management，逻辑卷使用上是裸盘类似
+物理盘容量有限制，逻辑卷可以扩展
+    优势：
+    1、扩展或者缩减磁盘空间
+    2、支持磁盘快照
+    
+100G物理盘 --》物理卷pv 100G --》多个pv组成磁盘池VG卷组--》在VG上建LV逻辑卷
+对lv逻辑卷做格式化挂载操作。
+
+工作工程：
+    磁盘/分区（ID：8e）--》PV物理卷--》VG卷组--》LV逻辑卷--》格式化--》挂载使用
+    注意：
+        1、分区，ID：8e
+        2、不需要事先格式化
+
+PV物理卷：
+1、创建PV
+#pvcreate 磁盘名称/分区名称
+
+2、查看系统中所有PV
+#pvscan
+
+3、删除PV
+#pvremove 物理卷名称
+
+
+VG卷组：
+1、创建VG
+#vgcreate 卷组名称 物理卷名称 ...
+
+2、查看VG
+#vgdisplay [卷组名称]
+
+3、删除VG
+#vgremove 卷组名称
+
+
+LV逻辑卷：
+1、创建 LV
+#lvcreate -L 容量 -n 逻辑卷名称 卷组名称
+#lvcreate -L 10G -n lv1 vg1
+    设备文件：/dev/卷组名称/逻辑卷名称   /dev/vg1/lv1
+
+2、查看系统中所有LV
+#lvscan
+
+3、删除LV
+#lvremove 逻辑卷的设备文件名称
+
+
+示例：
+创建逻辑卷/dev/data/webdata,大小为2G，为其创建ext4文件系统，并将其挂载到/web/htdocs目录
+
+1）创建pv
+#pvcreate /dev/vdc
+#pvscan
+
+2)创建卷组data
+#vgcreate data /dev/vdc
+#vgscan
+#vgdisplay data
+
+3)创建逻辑卷webdata
+#lvcreate -L 2G -n webdata data
+#lvscan
+
+4)创建文件系统
+#mkfs.ext4 /dev/data/webdata
+#mkdir -p /web/htdocs
+#vim /etc/fstab
+/dev/data/webdata /web/htdocs ext4 defaults 0 0
+
+#mount -a 
+#df -hT
+/dev/mapper/data-webdata ext4 2.0G 6M 1.8G 1% /web/htdocs
+
+
+示例：扩展逻辑卷/dev/data/webdata
+
+    1、
+29
+30
+
+
+31 RAID 独立冗余磁盘阵列
+    优势：
+        1、加快磁盘读写数据的速度
+        2、有效的保证数据安全性（运行时，磁盘故障，有备用盘可用）
+RAID级别
+RAID-0
+    至少需要两块相同容量的磁盘
+    提升数据读写速度
+    安全性低
+RAID-1
+    至少需要两块相同容量的磁盘
+    提升数据的安全性
+    容量是所有磁盘容量的1/2
+    
+RAID-5
+    至少需要三块相同容量的磁盘
+    提升数据读写速度
+    提升数据的安全性（最多只允许坏1块硬盘）2/3有效容量
+
+RAID-10
+    至少需四块相同容量的磁盘
+    最多允许2块硬盘损坏（不能是同一个RAID1中磁盘）    
+   
+
+物理盘--》物理分区
+
+
+-------------------------------------------------------------
+33 Linux系统网络参数设置
+
+    计算机名称
+    IP地址
+    子网掩码
+    默认网关
+    DNS服务器
+    
+1、计算机名称
+Centos 7：
+#hostnamectl set-hostname node01.linux.com  //FQDN 完全合格域名
+
+Centos 6：
+hostname node02.linux.com
+vim /etc/sysconfig/network
+
+2、IP地址
+类型：
+1）根据第一个字节的取值范围分类
+A类：0---127
+B类：128---191 
+C类：192---223    单播地址 Unicast同一个网络内，一个IP地址只能标示一个网络节点
+D类：224---239    组播地址 Muticast，一个IP组播地址标示一组节点
+E类：240---255    科学研究
+
+2）根据IP地址的使用范围
+
+私网地址
+    10.0.0.0 ------10.255.255.255
+    172.16.0.0 ------172.31.255.255
+    192.168.0.0 ------192.168.255.255
+公网地址
+
+特殊地址：
+127.0.0.1 ：环路地址，本机使用
+169.254.x.x   ： 错误的IP地址
+    
+3、子网掩码
+判断多个IP地址是否属于同一个网段
+A类：255.0.0.0     /8
+B类：255.255.0.0   /16
+C类：255.255.255.0 /24
+
+主机部分不能使用全0或全1
+
+
+
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+68 DNS服务器介绍
+
+
+如何架设DNS：
+网站：www.dns1.jd.com
+1、建zone
+2、建record
+
+部署DNS服务器
+    软件：bind,bind-chroot
+        伪根 /var/named/chroot ,DNS的对外可以访问的范围
+            /ect/named.conf ----》/var/named/chroot/etc/named.conf
+     配置文件：
+         主配置文件 /var/named/chroot/etc/named.conf   #建立区域
+         记录文件 /var/named/chroot/var/named/*
+     服务：named,named-chroot
+     端口：
+         53/udp  负责接收客户端DNS请求
+         53/tcp  负责主从服务器数据同步
+     
+示例：搭建DNS服务器
+    web.uplooking.com 192.168.1.1 
+    ftp.uplooking.com 192.168.1.2
+    mail.uplooking.com 192.168.1.3
+    
+DNS服务器：centos7 172.16.1.1
+    
+    
+            
+
+
+原理：域名解析为IP地址
+
+作用：
+域名解析为IP地址 arp 或反向解析narp
+
+知识点：
+区域zone
+    正向区域 uplook.com 对应域与主机
+    反向区域:x.x.x.in-addr.arpa 如：172.16.80.0/24 对应172.16.80.in-addr.arpa
+
+域名的层次结构{
+    根.
+        com / gov/org
+           baidu/jd
+}
+    
+记录Recor
+    A记录 主机记录,如:
+         www.uplooking.com  A    172.16.1.1
+    NS记录 标识DNS服务器自身的名称，标识DNS本身的解析
+        NS dns1.uplooking.com.
+        dns1.uplooking.com A 172.16.1.1
+    
+    MX记录 标识邮件服务器名称
+        MX 10 mail.uplooking.com. #10 邮件服务器优先级
+        mail.uplooking.com. A 172.16.1.3
+        
+    CNAME记录  别名记录，如m.mail.com.定义别名
+        m.mail.com.  CNAME mail.uplooking.com.
+        
+    PTR记录  反向指针记录
+        172.168.1.1 PTR  www.uplooking.com.
+        
+本地DNS hosts
+linux: /etc/hosts
+windows: \:\Windows\System32\drivers\etc     
+    61.91.161.217 google.com
+    61.91.161.217 www.google.com
+    220.181.57.216 www.baidu.com
+查看DNS的过程：
+    本地缓存--本地hosts--配置的DNS
+    
+   
+                
+    
+
+
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------

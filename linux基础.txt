@@ -1,0 +1,207 @@
+linux基础
+程序员视角
+
+ubuntu系统：
+下载vmware，安装
+下载ubunt，安装在虚拟机中
+ctrl + Alt键从ubuntu切换到vmware
+
+目录结构：
+/根目录
+/root 管理员用户home目录
+/bin 系统二进制文件
+/boot 系统启动文件
+/cdrom 光驱文件
+/dev 设备驱动文件
+/etc 配置文件 
+/home 家目录
+/lib  库文件
+/lib64 
+/media 媒介文件
+/mnt 挂载的文件
+/opt 用户程序
+/proc 伪系统目录
+/run
+/sbin
+/snap
+/srv
+/sys  伪系统目录
+/tmp  临时文件
+/usr  统一的系统资源文件，系统图标等
+/var  变化的文件，log文件等
+
+linux文件名大小写敏感
+Ctrl +h ：查看隐藏文件夹
+Ctrl + Alt +t ：启动命令行
+
+命令：
+
+文件操作命令：
+pwd：查看当前目录
+ls:  查看当前目录下的文件，非隐藏文件，
+    ls -a ，包含隐藏文件；-l参数列表显示；-h参数人性化可读显示；-d参数显示目录本身的信息；-t参数按照文件修改时间降序排序；-S参数文件大小降序排列
+cd:   切换目录，. 是当前目录，.. 是上级目录， ~ 是当前用户的home目录
+mkdir: 新建文件夹 -p参数可递归创建目录
+touch: 新建一个文件，txt文件；花括号展开（集合生成）如touch /tmp/{1..10}.mp3 生成10个文件 touch /tmp/{12,15}.mp3 生成2个文件
+cat:   查看文件内容，txt文件
+rm:    删除文件，-r参数可以删除一个文件夹即内容
+mv:    移动文件到目标文件夹
+cp:    拷贝文件到目标文件夹
+
+sh：bash文件，批处理文件
+
+du:   统计文件或目录大小，-s参数总文件的大小；-a参数每个文件大小
+
+
+权限操作命令：
+
+linux中，文件的权限分为：所有者权限、所在组其他用户权限、其他组用户权限
+1、所有者权限(user):创建这个文件的用户对这个文件特有的权限
+2、所在组其他用户权限(group)：当用户创建了一个文件后，这个文件所在的组的其他用户对这个文件蚩尤 的权限。
+3、其他组用户权限(other)：不与文件所有者同组的其他用户所拥有的权限。
+
+使用chmod命令改变文件或目录的权限
+1、第一个字符代表，'-'文件、'd'目录、‘|’链接
+2、其余字符三个一组：
+    第一组：所有者权限(u)
+    第二组：所在组其他用户权限(g)
+    第三组：其他组用户权限(o)
+3、‘r'可读、’w'可写、‘x'可执行
+实例：
+chmod g+w 文件名: g用户加上可写权限
+
+软件的安装：
+vim
+sudo apt-get install vim : 以管理员安装vim
+
+docker容器中安装vim:
+ 在使用docker容器时，有时候里边没有安装vim，敲vim命令时提示说：vim: command not found，这个时候就需要安装vim，可是当你敲apt-get install vim命令时，提示：
+    Reading package lists... Done
+    Building dependency tree ? ? ??
+    Reading state information... Done
+    E: Unable to locate package vim
+这时候需要敲：apt-get update，这个命令的作用是：同步 /etc/apt/sources.list 和 /etc/apt/sources.list.d 中列出的源的索引，这样才能获取到最新的软件包。
+等更新完毕以后再敲命令：apt-get install vim命令即可。
+
+
+--------------------------------------------------------
+第二部分
+centos7 镜像下载
+下载来源：https://hub.docker.com/
+
+
+[root@wxtest1607 ~]# docker pull centos:7.2.1511
+[root@wxtest1607 lixr]# docker images
+REPOSITORY                TAG                 IMAGE ID            CREATED             SIZE
+centos                    7.2.1511            686672a1d0cc        7 weeks ago         194.6 M
+
+登录docker中的CentOS7
+docker run -ti 6866 /bin/bash
+#6866 是 IMAGE ID 前四位数字-能区分出是哪个image即可
+root@b4ad1d1c87da /]# 
+#登录成功，接下来就可以为所欲为啦。
+
+检查CentOS7系统
+root@b4ad1d1c87da  /]# uname -a
+Linux b4ad1d1c87da 3.10.0-327.el7.x86_64 #1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux
+[root@b4ad1d1c87da /]# cat /etc/redhat-release 
+CentOS Linux release 7.2.1511 (Core)
+退出后 再进入CentOS7
+
+[root@wxtest1607 ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+b4ad1d1c87da        6866                "/bin/bash"         12 seconds ago      Up 9 seconds                            mad_swanson
+               drunk_hypatia
+[root@wxtest1607 ~]# docker exec -ti b4ad /bin/bash
+
+hostname：查看主机名 ，FQDN：完全合格域名（如jidong.com）
+    hostnamectl set-hostname node01.linux.com //docker 的centos容器中不支持修改主机名
+ifconfig:查看IP地址
+
+6、centos默认没有ifconfig命令，配置ifconfig
+[root@bce6d9a692b2 /]# ifconfig
+bash: ifconfig: command not found
+[root@bce6d9a692b2 /]#
+
+[root@bce6d9a692b2 /]# yum search ifconfig
+Loaded plugins: fastestmirror, ovl
+----------------------------------
+docker上安装centos镜像
+https://blog.csdn.net/yangym2002/article/details/79000241 
+----------------------------------
+docker中centos7安装ssh服务
+https://blog.csdn.net/qq_32969313/article/details/64919735
+
+---------------------------------------------
+生成镜像 
+[root@cgls]# docker commit eafd9111ada6 cgls/centos7 
+指定了要提交的修改过的容器的ID、目标镜像仓库、镜像名。
+
+--基于新镜像运行容器
+hr:centos7 hr$ docker run -d -p 10022:22 herong/centos7-ssh:latest /usr/sbin/sshd -D
+
+--查看映射端口是否成功
+hr:centos7 hr$ docker ps -all
+CONTAINER ID        IMAGE     COMMAND               CREATED             STATUS              PORTS                   NAMES
+4966d35fe0a3        herong/centos7-ssh:latest   "/usr/sbin/sshd -D"   3 seconds ago       Up 3 seconds        0.0.0.0:10022->22/tcp   compassionate_kowalevski
+
+hr:centos7 hr$ docker port 4966d35fe0a3
+22/tcp -> 0.0.0.0:10022
+
+作者：OneYX
+链接：https://www.jianshu.com/p/51251b30349c
+來源：简书
+简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。
+
+如果宿主机是非linux操作系统，则需要通过docker-machine ip连到容器
+-- 查看docker-machine Ip地址
+hr:centos7 hr$ docker-machine ip default
+192.168.99.100
+
+--通过docker-machine ip  连接到容器，输入之前设置的密码即可登录成功
+hr:centos7 hr$ ssh root@192.168.99.100 -p 10022
+The authenticity of host '[192.168.99.100]:10022 ([192.168.99.100]:10022)' can't be established.
+ECDSA key fingerprint is SHA256:d3JNckcTVv1ASJlwv+IT/bJwlzMC4U1T/PmsKYIHMhQ.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '[192.168.99.100]:10022' (ECDSA) to the list of known hosts.
+root@192.168.99.100's password: 
+[root@4966d35fe0a3 ~]# pwd
+/root
+
+如果宿主机是linux操作系统，则通过第4步查看到的ip地址连接
+hr:centos7 hr$ ssh root@172.17.0.2 -p 10022
+
+************************************
+从putty上登录：使用 192.168.99.100:10022 root 123
+************************************
+
+windows7版本下的docker 镜像文件存放位置在本地哪个文件夹？
+windows 7不支持docker，你应该用的是类似boot2docker一类的方案，它们相当于虚拟机
+
+************************************
+C:\Users\Administrator\.docker\machine\machines\default\disk.vmdk
+************************************
+
+2
+1、查看及修改主机
+# hostname
+# hostnamectl set-hostname node01.linux.com
+
+2、查看IP地址
+# ifconfig
+
+3、远程连接主机
+# ssh  192.168.99.100:10022
+
+4、关机
+# poweroff
+
+ftp 下载文件	
+ftp://192.168.99.100:10022
+
+---------------------------------------------
+
+
+
+
+
